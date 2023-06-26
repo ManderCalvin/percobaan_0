@@ -1,0 +1,106 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+
+
+        <h1>Ubah Disiplin</h1>
+
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+
+                <li class="breadcrumb-item active">Ubah Disiplin</li>
+
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Perubahan Data Pelanggaran</h5>
+
+                                <!-- Horizontal Form -->
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="reset" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </form><!-- End Horizontal Form -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+                
+                    <div class="card-body">
+                        <h5 class="card-title">Penjelassan Kehadiran <span>| Nilai</span></h5>
+                
+                        <div class="activity">
+                
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Hari Masuk</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    Hari Masuk adalah Jumlah hari karyawan bekera
+                                </div>
+                            </div><!-- End activity item-->
+                
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Banyak Hari</div>
+                                <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+                
+                                <div class="activity-content">
+                                    Banyak Hari adalah total hari dari bulan yang ditentukan - ( Hari Minggu + Hari Libur + Hari Cuti)
+                                </div>
+                            </div><!-- End activity item-->
+                
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Hari Cuti</div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                    Normalnya jumlah cuti yang telah ditetapkan oleh UU No 12 Tahun 2003 pasal 79, yaitu 12 hari dalam
+                                    satu tahun apabila karyawan
+                                    sudah bekerja selama 12 bulan
+                                    Lalu 12 hari dibagi dalam 12 bulan, sehingga jumlah cuti normalnya 1 hari per 1 bulan
+                                </div>
+                            </div><!-- End activity item-->
+                
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Hari Libur</div>
+                                <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
+                                <div class="activity-content">
+                                    Hari Libur Tiap Bulan Berbeda-beda, dan juga harus dipikirkan hari cuti bersamanya
+                                </div>
+                            </div><!-- End activity item-->
+                
+                        </div>
+                
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div>
+            <!-- End Right side columns -->
+        </div>
+
+    </section>
+
+</main><!-- End #main -->
+{% endblock content %}

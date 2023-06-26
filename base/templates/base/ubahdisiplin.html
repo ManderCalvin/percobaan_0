@@ -1,0 +1,129 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+
+        
+        <h1>Ubah Disiplin</h1>
+        
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+
+                <li class="breadcrumb-item active">Ubah Disiplin</li>
+                
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Perubahan Data Pelanggaran</h5>
+
+                                <!-- Horizontal Form -->
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="reset" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </form><!-- End Horizontal Form -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Nilai dan Pelanggarannya <span>| Nilai</span></h5>
+
+                        <div class="activity">
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">0 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    Belum Melakukan Pelanggaran
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">1 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+                                
+                                <div class="activity-content">
+                                    pelanggaran yang tidak berdampak signifikan terhadap lingkungan kerja, hubungan pelanggan, atau penjualan.Contoh
+                                    pelanggaran yang dimaksud, Tidak menggunakan seragam sesuai dengan Brand yang ditempati, Telat datang sesuai dengan
+                                    aturan yang berlaku (Tidak melebihi 45 Menit keterlambatan), Istirahat melebihi waktu yang ditentukan, atau tidak ada di
+                                    pos yang ditentukan saat bertugas.                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">2 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                    Perilaku tidak sopan pada rekan kerja, atasan, atau pelanggan, seperti meremehkan pertanyaan pelanggan,
+                                    menjelek-jelekkan rekan kerja, atau menunjukkan rasa tidak hormat kepada manajemen.
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">3 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
+                                <div class="activity-content">
+                                    Secara konsisten melakukan pelanggaran atau melakukan pelnggaran yang tidak hanya berdampak pada kinerja diri, juga
+                                    penjualan, rekan kerja, dan lingkungan kerja seperti telat datang melebihi 45 Menit, Memberikan informasi yang salah
+                                    pada pembeli, tidak masuk kerja dan tidak memberikan pengumuman/penjelasan (1 hari), tidak mengisi ulang persediaan, dan
+                                    tidak mengikuti protokol penjualan yang tepat.
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">4 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+                                <div class="activity-content">
+                                    Perilaku tidak sopan berulang-ulang, terlibat dalam perilaku bermusuhan terhadap orang lain, seperti penindasan, agresi
+                                    verbal, intimidasi, atau kekerasan fisik minor, yang secara signifikan mengganggu lingkungan kerja, berdampak negatif
+                                    pada moral rekan kerja, dan dapat sangat merusak hubungan dengan pelanggan dan reputasi perusahaan.
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">5 Poin</div>
+                                <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+                                <div class="activity-content">
+                                    Melakukan aktivitas kriminal dalam konteks kerja, seperti pencurian, penipuan, dan mencuri stok. Ini merupakan level
+                                    tertinggi, yang tidak hanya melukai/memberikan efek negatif pada rekan kerja, pelanggan, dan perusahaan, namun juga
+                                    dapat terlibat potensi konsekuensi hukum.
+                                </div>
+                            </div><!-- End activity item-->
+
+                        </div>
+
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div>
+            <!-- End Right side columns -->
+        </div>
+        
+    </section>
+
+</main><!-- End #main -->
+{% endblock content %}

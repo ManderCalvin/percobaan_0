@@ -1,0 +1,101 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Performa Penjualan</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Performa Penjualan</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+
+                    <!-- Data Pegawai -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Nilai Performa Penjualan<span>| Total Karyawan {{ kehadiran.count }}</span></h5>
+
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">id</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Jumlah Barang Brand </th>
+                                            <th scope="col">Jumlah Barang Brand Lain</th>
+                                            <th scope="col">Bulan Performa</th>
+                                            <th scope="col">Nilai Performa Penjualan</th>
+                                            <th scope="col">Ubah Performa</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {% for performa_penjualan in performa_penjualan %}
+                                        <tr>
+                                            <th scope="row"><a href="#">{{ performa_penjualan.id }}</a></th>
+                                            <td>{{ performa_penjualan.nama }}</td>
+                                            <td>{{ performa_penjualan.jual_brands }}</td>
+                                            <td>{{ performa_penjualan.jual_brands_lain }}</td>
+                                            <td>{{ performa_penjualan.bulan_performa_penjualan }}</td>
+                                            <td>{{ performa_penjualan.jual_brands|mul:2|add:performa_penjualan.jual_brands_lain}}</td>
+                                            
+                                            <td>
+                                                <a href="{% url 'ubahperformapenjualan' performa_penjualan.id %}" type="button" class="btn btn-secondary rounded-pill btn-sm">Ubah</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Pegawai Sales -->
+                </div>
+            </div><!-- End Left side columns -->
+
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+                
+                    <div class="card-body">
+                        <h5 class="card-title">Performa Penjualan <span>| Nilai</span></h5>
+                
+                        <div class="activity">
+                
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Nilai PP</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    Nilai Performa Penjualan didapatkan dengan rumus (2x Barang Brand sendiri yang dijual)+(1x Total
+                                    Barang Brand Lain yang dijual)
+                                </div>
+                            </div><!-- End activity item-->
+                
+                
+                        </div>
+                
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div><!-- End Right side columns -->
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+{% endblock content %}

@@ -1,0 +1,280 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Halaman AHP</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'nilai_ahp' %}">Nilai AHP</a></li>
+                <li class="breadcrumb-item active">Perhitungan AHP</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+                    <!-- Data AHP -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Form AHP<span> | Memberikan Nilai Tingkat Kepentingan</span></h5>                                
+                                <!-- Horizontal Form -->
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="reset" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </form><!-- End Horizontal Form -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Data AHP Sales -->
+                </div>
+            </div><!-- End Left side columns -->
+
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Tingkat Kepentingan <span>| Penjelasan</span></h5>
+
+                        <div class="activity">
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">1</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    <strong>Sama penting</strong>
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">2</div>
+                                <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+
+                                <div class="activity-content">
+                                    Apabila tidak dapat memilih antara Sama Penting dan Cukup Penting 
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">3</div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                    <strong>Cukup Penting</strong>
+                                    (1 Level lebih penting di bandingkan kriteria lainnya)
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">4</div>
+                                <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
+                                <div class="activity-content">
+                                    Apabila tidak dapat memilih antara Cukup Penting dan Lebih Penting
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">5</div>
+                                <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+                                <div class="activity-content">
+                                    <strong>Lebih Penting</strong> (2 Level lebih penting di bandingkan kriteria lainnya)
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">6</div>
+                                <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+                                <div class="activity-content">
+                                        Apabila tidak dapat memilih antara lebih penting atau sangat lebih penting
+                                </div>
+                            </div><!-- End activity item-->
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">7</div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                    <strong>Sangat lebih penting</strong> (3 Level lebih penting di bandingkan kriteria lainnya)
+                                </div>
+                            </div><!-- End activity item-->
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">8</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    Apabila tidak dapat memilih antara Sangat lebih penting atau mutlak.
+                                </div>
+                            </div><!-- End activity item-->
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">9</div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                     <strong>Mutlak</strong>(4 Level lebih penting di bandingkan kriteria lainnya dan merupakan tingkatan tertinggi)
+                                </div>
+                            </div><!-- End activity item-->
+                        </div>
+
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div><!-- End Right side columns -->
+
+            {% if df != 'Belum ada' %}
+                <!-- Left side columns -->
+                <div class="">
+                    <div class="row">
+                        <!-- Matriks Perbandingan  -->
+                        <div class="col-12">
+                            <div class="card recent-sales overflow-auto">
+                                <div class="card-body">
+                                    <h5 class="card-title">Matriks<span> | Perbandingan</span></h5>
+                                    <!-- Horizontal Form -->
+                                    {{df|safe}}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Matriks Perbandingan  -->
+                    </div>
+                    <div class="row">
+                        <!-- Matriks Sintesis 1  -->
+                        <div class="col-12">
+                            <div class="card recent-sales overflow-auto">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sintesis 1 <span> | Pembagian Nilai Matriks / Jumlah</span></h5>
+                                    <!-- Horizontal Form -->
+                                    {{ef1|safe}}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Matriks Sintesis 1  -->
+                    </div>
+                    <div class="row">
+                        <!-- Matriks Sintesis 2  -->
+                        <div class="col-12">
+                            <div class="card recent-sales overflow-auto">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sintesis 2 <span> | Jumlah dan Rata-rata Sintesis 1</span></h5>
+                                    <!-- Horizontal Form -->
+                                    {{ff|safe}}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Matriks Sintesis 2  -->
+                    </div>
+                    <div class="row">
+                        <!-- Lambda, Ci, dan CR  -->
+                        <!-- Lambda Card -->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="card info-card revenue-card">
+                        
+                                <div class="card-body">
+                                    <h5 class="card-title">Lambda <span>| MAX</span></h5>
+                        
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{gf}}</h6>
+
+                        
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                            </div>
+                        </div><!-- End Revenue Card -->
+                        <!-- Consistensi Index Card -->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="card info-card sales-card">
+                        
+                                <div class="filter">
+                                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                        <li class="dropdown-header text-start">
+                                            <h6>Filter</h6>
+                                        </li>
+                        
+                                        <li><a class="dropdown-item" href="#">Today</a></li>
+                                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                                    </ul>
+                                </div>
+                        
+                                <div class="card-body">
+                                    <h5 class="card-title">CI (Consistensi Index) <span>| (Consistensi Index)</span></h5>
+                        
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{ hf }}</h6>
+
+                        
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                            </div>
+                        </div><!-- Consistensi Index End -->
+                        <!-- Consistensi Rasio -->
+                        <div class="col-xxl-4 col-xl-12">
+                        
+                            <div class="card info-card customers-card">
+                    
+                        
+                                <div class="card-body">
+                                    <h5 class="card-title">CR Consistensi (Consistensi Ratio)
+                                        {% if jf <= 0.1 %}
+                                            <span style="color:green">
+                                                | Rasio Konsistensi Tidak Melebihi 0.1.
+                                                Nilai AHP disimpan pada basis data.
+                                                Dan perhitungan dapat dilakukan
+                                            </span>
+                                        {% elif jf > 0.1%}
+                                            <span style="color:red">
+                                                | Rasio Konsistensi Melebihi 0.1.
+                                                Nilai AHP tidak disimpan, Ulang Kembali Perhitungan dari Awal
+                                            </span>
+                                        {% endif %}
+                                    </h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-people"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{ jf }}</h6>
+                                            
+                        
+                                        </div>
+                                    </div>
+                        
+                                </div>
+                            </div>
+                        
+                        </div><!-- End Consistensi Rasio -->
+            
+                        <!-- End Lambda, Ci, dan CR  -->
+                    </div>
+                </div><!-- End Left side columns -->
+            {% endif %}
+        </div>
+    </section>
+
+</main><!-- End #main -->
+{% endblock content %}

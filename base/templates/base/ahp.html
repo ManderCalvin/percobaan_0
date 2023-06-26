@@ -1,0 +1,164 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Halaman AHP</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Nilai AHP</li>
+                <li class="breadcrumb-item"><a href="{% url 'perhitungan_ahp' %}">Perhitungan AHP</a></li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+
+                    <!-- Data AHP -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Nilai Final AHP<span> | {{ nilai_ahp.count}}</span></h5>
+                                    {% if nilai_ahp_ada == 'Yes' %}
+                                    <a href="{% url 'perhitungan_ahp' %}" class="btn btn-success btn-lg">Mulai Perhitungan</a>
+                                    {% else %}
+                                    <h4 style="color:red"> 
+                                        Belum dapat dilakukan Perhitungan karena Kriteria yang dipilih di bawah 3 
+                                        atau
+                                        belum dipilih sama sekali kriterianya.
+                                        
+
+                                    </h4>
+                                    <h4 style="color:red">
+
+                                        <strong>Pilih kembali di FORM AHP di bawah ini</strong>
+                                    
+                                    </h4>
+                                    {% endif %}
+                                
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <th scope="col">Nama</th>
+                                            <th scope="col">Nilai Kriteria</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for nilai_ahp in nilai_ahp %}
+                                        <tr>
+                                            
+                                            <td>{{ nilai_ahp.nama_kriteria }}</td>
+                                            {% if nilai_ahp.value_kriteria == None%}
+                                            <td>Nilai Belum ditentukan <strong>Silahkan Klik Tombol Mulai Perhitungan</strong></td>
+                                            {% else %}
+                                            <td>{{ nilai_ahp.value_kriteria }}</td>
+                                            {% endif %}
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data AHP Sales -->
+                </div>
+                <div class="row">                
+                    <!-- Data AHP -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Form AHP<span> | Memilih Kriteria</span></h5>
+                                <h5>Pilihlah Kriteria AHP yang akan dilakukan Perhitungan</h5>
+                                <!-- Horizontal Form -->
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="reset" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </form><!-- End Horizontal Form -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Data AHP Sales -->
+                </div>
+            </div><!-- End Left side columns -->
+
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Nilai dan Pelanggarannya <span>| Nilai</span></h5>
+
+                        <div class="activity">
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Nilai AHP</div>
+                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                                <div class="activity-content">
+                                    Nama Kriteria didapatkan setelah Anda memilih checkbox dalam <strong>Form AHP</strong> di bawah <strong>Nilai Final AHP</strong>
+                                </div>
+                            </div><!-- End activity item-->
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Nilai AHP</div>
+                                <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
+                                <div class="activity-content">
+                                    Nilai Kriteria didapatkan dengan cara mengklik Tombol <strong>+Perhitungan AHP</strong>
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">Form AHP</div>
+                                <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+
+                                <div class="activity-content">
+                                    Pilih Kriteria Apa saja yang ingin dipilih
+                                </div>
+                            </div><!-- End activity item-->
+
+                        </div>
+
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div><!-- End Right side columns -->
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+<script>
+    var checkboxes = document.querySelectorAll("input[type='checkbox']");
+    var count = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            count++;
+        }
+    }
+
+    if (count < 3) {
+        alert("You must check at least 3 checkboxes.");
+        return false;
+    }
+</script>
+
+{% endblock content %}

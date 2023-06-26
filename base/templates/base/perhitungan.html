@@ -1,0 +1,279 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Perhitungan TOPSIS</h1>
+        <button class="btn btn-primary btn-lg" onclick="Export2Doc('container');">Cetak Dalam Word </button>
+        <button class="btn btn-success btn-lg" id="export">Cetak Dalam Excel </button>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Perhitungan TOPSIS</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section id="container"class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="">
+                <div class="row">
+
+                    <!-- Data Pegawai -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Nilai Karyawan <span>| Total Karyawan 18</span></h5>
+
+                                <table id="example-table"class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">id</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for nilai in penilaian %}
+                                        <tr>
+                                            <th scope="row"><a href="#">{{ nilai.id }}</a></th>
+                                            <td>{{ nilai.nama }}</td>
+                                            <td>{{ nilai.nilai_performa_penjualan|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_pengetahuan_produk|floatformat:"1" }}</td>
+                                            <td>{{ nilai.nilai_disiplin|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_kehadiran|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_masa_kerja|floatformat:"0" }} Bulan</td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Pegawai Sales -->
+                    <!-- Matris Awal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Nilai Bobot TOPSIS <span>| Didapatkan Dari Hasil AHP</span></h5>
+                                {{data_ahp|safe}}
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Awal -->
+                    <!-- Matris Awal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Matriks Awal <span>| Perhitungan TOPSIS</span></h5>
+                                {{filtered_scores|safe}}
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Awal -->
+                    <!-- Data Normalisasi  -->
+                    <div class="col-12">
+                        
+                        <div class="card recent-sales overflow-auto">
+  
+                            <div class="card-body">
+                                <h5 class="card-title">Normalisasi <span> | Perhitungan TOPSIS</span></h5>
+
+                                {{b_value|safe}}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Normalisasi  -->
+                    <!-- Data Normalisasi Terbobot -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Normalisasi Terbobot<span> | Perhitungan TOPSIS</span></h5>
+                    
+                                {{c_value|safe}}
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Normalisasi Terbobot -->
+                    <!-- Data Bobot Ideal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Bobot Ideal<span> | Perhitungan TOPSIS</span></h5>
+                    
+                                {{d_value|safe}}
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Bobot Ideal -->
+                    <!-- Data Perhitungan Distance Ideal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Perhitungan Distance/Jarak Ideal<span> | Perhitungan TOPSIS</span></h5>
+                    
+                                {{e_value|safe}}
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Perhitungan Distance Ideal -->
+                    <!-- Data Bobot Preferensi  -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Pembobotan Terakhir dan Ranking<span> | Perhitungan TOPSIS</span></h5>
+                    
+                                    {{f_value|safe}}
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Bobot Preferensi  -->
+                    <!-- Data Prangkingan / Bobot Preferensi  -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Pembobotan Terakhir dan Ranking<span> | Perhitungan TOPSIS</span></h5>
+                    
+                                    {{g_value|safe}}
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Prangkingan / Bobot Preferensi  -->
+                </div>
+            </div><!-- End Left side columns -->
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+<script src="{% static 'assets/js/table2excel.js'%}"></script>
+
+<script>
+    var table2excel = new Table2Excel();
+
+    document.getElementById('export').addEventListener('click', function () {
+        table2excel.export(document.querySelectorAll('table'));
+    });
+</script>
+<script>
+    function Export2Doc(element, filename = '') {
+        //  _html_ will be replace with custom html
+        var meta = "Mime-Version: 1.0\nContent-Base: " + location.href + "\nContent-Type: Multipart/related; boundary=\"NEXT.ITEM-BOUNDARY\";type=\"text/html\"\n\n--NEXT.ITEM-BOUNDARY\nContent-Type: text/html; charset=\"utf-8\"\nContent-Location: " + location.href + "\n\n<!DOCTYPE html>\n<html>\n_html_</html>";
+        //  _styles_ will be replaced with custome css
+        var head = "<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<style>\n_styles_\n</style>\n</head>\n";
+
+        var html = document.getElementById(element).innerHTML;
+
+        var blob = new Blob(['\ufeff', html], {
+            type: 'application/msword'
+        });
+
+        var css = (
+            '<style>' +
+            'img {width:300px;}table {border-collapse: collapse; border-spacing: 0;}td{padding: 6px;}' +
+            '</style>'
+        );
+        //  Image Area %%%%
+        var options = { maxWidth: 624 };
+        var images = Array();
+        var img = $("#" + element).find("img");
+        for (var i = 0; i < img.length; i++) {
+            // Calculate dimensions of output image
+            var w = Math.min(img[i].width, options.maxWidth);
+            var h = img[i].height * (w / img[i].width);
+            // Create canvas for converting image to data URL
+            var canvas = document.createElement("CANVAS");
+            canvas.width = w;
+            canvas.height = h;
+            // Draw image to canvas
+            var context = canvas.getContext('2d');
+            context.drawImage(img[i], 0, 0, w, h);
+            // Get data URL encoding of image
+            var uri = canvas.toDataURL("image/png");
+            $(img[i]).attr("src", img[i].src);
+            img[i].width = w;
+            img[i].height = h;
+            // Save encoded image to array
+            images[i] = {
+                type: uri.substring(uri.indexOf(":") + 1, uri.indexOf(";")),
+                encoding: uri.substring(uri.indexOf(";") + 1, uri.indexOf(",")),
+                location: $(img[i]).attr("src"),
+                data: uri.substring(uri.indexOf(",") + 1)
+            };
+        }
+
+        // Prepare bottom of mhtml file with image data
+        var imgMetaData = "\n";
+        for (var i = 0; i < images.length; i++) {
+            imgMetaData += "--NEXT.ITEM-BOUNDARY\n";
+            imgMetaData += "Content-Location: " + images[i].location + "\n";
+            imgMetaData += "Content-Type: " + images[i].type + "\n";
+            imgMetaData += "Content-Transfer-Encoding: " + images[i].encoding + "\n\n";
+            imgMetaData += images[i].data + "\n\n";
+
+        }
+        imgMetaData += "--NEXT.ITEM-BOUNDARY--";
+        // end Image Area %%
+
+        var output = meta.replace("_html_", head.replace("_styles_", css) + html) + imgMetaData;
+
+        var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(output);
+
+
+        filename = filename ? filename + '.doc' : 'document.doc';
+
+
+        var downloadLink = document.createElement("a");
+
+        document.body.appendChild(downloadLink);
+
+        if (navigator.msSaveOrOpenBlob) {
+            navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            downloadLink.click();
+        }
+
+        document.body.removeChild(downloadLink);
+    }
+</script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+{% endblock content %}

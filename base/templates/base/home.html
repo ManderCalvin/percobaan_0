@@ -1,0 +1,96 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>Dashboard</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <section class="section dashboard">
+            <div class="row">
+
+                <!-- Left side columns -->
+                <div class="">
+                    <div class="row">
+                        
+                        <!-- Data Pegawai -->
+                        <div class="col-12">
+                            <div class="card recent-sales overflow-auto">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nilai Karyawan <span>| Total Karyawan 18</span></h5>
+                                    {% if nilai_ahp_ada == 'Yes' %}
+                                        <a type="button" id="myButton"class="btn btn-success btn-lg">Mulai Perhitungan</a>
+                                    {% else %}
+                                        <h4 style="color:red"> Belum dapat dilakukan Perhitungan karena Nama Kriteria dan/atau Nilai AHP belum ditentukan, Pergi ke Halaman AHP</h4>
+                                    {% endif %}
+                                    
+                                    <table class="table table-borderless datatable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">id</th>
+                                                <th scope="col">Nama Karyawan</th>
+                                                <th scope="col">Nilai performa Penjualan</th>
+                                                <th scope="col">Nilai Pengetahuan Produk</th>
+                                                <th scope="col">Nilai Disiplin</th>
+                                                <th scope="col">Nilai Kehadiran</th>
+                                                <th scope="col">Nilai Masa Kerja</th>
+                                    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for penilaian in penilaian %}
+                                            <tr>
+                                                <th scope="row">{{ penilaian.id }}</th>
+                                                <td>{{ penilaian.nama }}</td>
+                                                <td>{{ penilaian.nilai_performa_penjualan|floatformat:"0" }}</td>
+                                                <td>{{ penilaian.nilai_pengetahuan_produk|floatformat:"2" }}</td>
+                                                <td>{{ penilaian.nilai_disiplin|floatformat:"0" }}</td>
+                                                <td>{{ penilaian.nilai_kehadiran|floatformat:"0" }}</td>
+                                                <td>{{ penilaian.nilai_masa_kerja|floatformat:"0" }} Bulan</td>
+                                    
+                                            </tr>
+                                            {% endfor %}
+                                    
+                                        </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                        <!-- End Data Pegawai Sales -->
+                    </div>
+                </div><!-- End Left side columns -->
+
+
+            </div>
+        </section>
+
+    </main><!-- End #main -->
+    <script>
+
+    document.getElementById("myButton").addEventListener("click", function () {
+            // Disable the button so that it cannot be clicked again until the loading is complete
+            this.disabled = true;
+
+            // Create a blank div to cover the screen
+            var loadingDiv = document.createElement("div");
+            loadingDiv.style.width = "100vw";
+            loadingDiv.style.height = "100vh";
+            loadingDiv.style.backgroundColor = "white";
+            document.body.appendChild(loadingDiv);
+
+            // Start a timer that will load the other page after 3 seconds
+            var timer = setTimeout(function () {
+                // The other page has finished loading
+                document.body.removeChild(loadingDiv);
+                window.location.href = "{% url 'perhitungan' %}";
+            }, 3000);
+        });
+    </script>
+{% endblock content %}

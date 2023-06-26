@@ -1,0 +1,520 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Perhitungan</h1>
+        <button class="btn btn-primary btn-lg" onclick="Export2Doc('container');">Cetak Dalam Word </button>
+        <button class="btn btn-success btn-lg" id="export">Cetak Dalam Excel </button>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Perhitungan</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section id="container"class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="">
+                <div class="row">
+                    
+
+                    
+                    <!-- Kriteria -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+
+                            <div class="card-body">
+                                <h5 class="card-title">Pembobotan Kriteria AHP <span>| Analytical Hierarchy Proces</span></h5>
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                    
+                                                <th scope="col">Nomor</th>
+                                                <th scope="col">Kriteria Prioritas</th>
+                                                <th scope="col">Kriteria</th>
+                                                <th scope="col">Tingkat Kepentingan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for kriteriaahp in kriteriaahp%}
+                                            <tr>
+                                                <th scope="row">{{ kriteriaahp.nomor }}</th>
+                                                <td>{{ kriteriaahp.prioritas_kriteria}}</td>
+                                                <td>{{ kriteriaahp.kriteria}}</td>
+                                                <td>{{ kriteriaahp.tingkat_kepentingan}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- <!-- End Kriteria --> 
+                    <!-- Hitung Kriteria -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Perhitungan Bobot Kriteria AHP <span>| Analytical Hierarchy Proces</span></h5>
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Kriteria</th>
+                                            <th scope="col">Nilai Performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bobotkriteriaahp in bobotkriteriaahp%}
+                                        <tr>
+                                            <th scope="row">{{ bobotkriteriaahp.nomor }}</th>
+                                            <td>{{ bobotkriteriaahp.nilai_performa_penjualan}}</td>
+                                            <td>{{ bobotkriteriaahp.nilai_pengetahuan_produk}}</td>
+                                            <td>{{ bobotkriteriaahp.nilai_disiplin}}</td>
+                                            <td>{{ bobotkriteriaahp.nilai_kehadiran}}</td>
+                                            <td>{{ bobotkriteriaahp.nilai_masa_kerja}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- Hitung Kriteria -->
+                    <!-- Eigen Vektor -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Eigen Vector <span>| Analytical Hierarchy Proces</span></h5>
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Kriteria</th>
+                                            <th scope="col">Nilai Performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+                                            <th scope="col">Jumlah</th>
+                                            <th scope="col">Rata-Rata</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for eigenvektorahp in eigenvektorahp%}
+                                        <tr>
+                                            <th scope="row">{{ eigenvektorahp.nomor }}</th>
+                                            <td>{{ eigenvektorahp.nilai_performa_penjualan}}</td>
+                                            <td>{{ eigenvektorahp.nilai_pengetahuan_produk}}</td>
+                                            <td>{{ eigenvektorahp.nilai_disiplin}}</td>
+                                            <td>{{ eigenvektorahp.nilai_kehadiran}}</td>
+                                            <td>{{ eigenvektorahp.nilai_masa_kerja}}</td>
+                                            <td>{{ eigenvektorahp.jumlah }}</td>
+                                            <td>{{ eigenvektorahp.rata_rata }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- Eigen Vektor -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Perhitungan Konsistensi <span>| Analytical Hierarchy Proces</span></h5>
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nama Perhitungan</th>
+                                            <th scope="col">Perhitungan</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for konsistensi in konsistensi%}
+                                        <tr>
+                                            
+                                            <th scope="row">{{ konsistensi.nama_perhitungan }}</th>
+                                            <td>{{ konsistensi.perhitungan}}</td>
+                          
+                                        </tr>
+                                        {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- Eigen Vektor -->
+                    <!-- Data Pegawai -->
+                    <div class="col-12">
+<div class="card recent-sales overflow-auto">
+                            <div class="card-body">
+                                <h5 class="card-title">Nilai Karyawan <span>| Total Karyawan 18</span></h5>
+
+                                <table id="example-table"class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">id</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for nilai in penilaian %}
+                                        <tr>
+                                            <th scope="row"><a href="#">{{ nilai.id }}</a></th>
+                                            <td>{{ nilai.nama }}</td>
+                                            <td>{{ nilai.nilai_performa_penjualan|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_pengetahuan_produk|floatformat:"1" }}</td>
+                                            <td>{{ nilai.nilai_disiplin|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_kehadiran|floatformat:"0" }}</td>
+                                            <td>{{ nilai.nilai_masa_kerja|floatformat:"0" }} Bulan</td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Pegawai Sales -->
+
+                    <!-- Data Normalisasi  -->
+                    <div class="col-12">
+                        
+                        <div class="card recent-sales overflow-auto">
+  
+                            <div class="card-body">
+                                <h5 class="card-title">Normalisasi <span> | TOPSIS</span></h5>
+
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for normal in normalisasi %}
+                                        <tr>
+
+
+                                            <th scope="row"><a href="#">{{ normal.no_field }}</a></th>
+                                            <td>{{ normal.nama }}</td>
+                                            <td>{{ normal.nilai_kehadiran }}</td>
+                                            <td>{{ normal.nilai_performa_penjualan }}</td>
+                                            <td>{{ normal.nilai_disiplin }}</td>
+                                            <td>{{ normal.nilai_masa_kerja }}</td>
+                                            <td>{{ normal.nilai_pengetahuan_produk }} </td>
+
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Normalisasi  -->
+                    <!-- Data Normalisasi Terbobot -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Normalisasi Terbobot<span> | TOPSIS</span></h5>
+                    
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai performa Penjualan</th>
+                                            <th scope="col">Nilai Pengetahuan Produk</th>
+                                            <th scope="col">Nilai Disiplin</th>
+                                            <th scope="col">Nilai Kehadiran</th>
+                                            <th scope="col">Nilai Masa Kerja</th>
+                    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bobot_normal in bobot_normal %}
+                                        <tr>
+                    
+                    
+                                            <th scope="row"><a href="#">{{ bobot_normal.no_field }}</a></th>
+                                            <td>{{ bobot_normal.nama }}</td>
+                                            <td>{{ bobot_normal.nilai_kehadiran }}</td>
+                                            <td>{{ bobot_normal.nilai_performa_penjualan }}</td>
+                                            <td>{{ bobot_normal.nilai_disiplin }}</td>
+                                            <td>{{ bobot_normal.nilai_masa_kerja }}</td>
+                                            <td>{{ bobot_normal.nilai_pengetahuan_produk }} </td>
+                    
+                    
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Normalisasi Terbobot -->
+                    <!-- Data Bobot Ideal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Bobot Ideal<span> | TOPSIS</span></h5>
+                    
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai Ideal Positif</th>
+                                            <th scope="col">Nilai Ideal Negatif</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bobot_ideal in bobot_ideal %}
+                                        <tr>
+                    
+                    
+                                            <th scope="row"><a href="#">{{ bobot_ideal.no_field }}</a></th>
+                                            <td>{{ bobot_ideal.nama }}</td>
+                                            <td>{{ bobot_ideal.nilai_ideal_positif }}</td>
+                                            <td>{{ bobot_ideal.nilai_ideal_negatif }}</td>
+
+                    
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Bobot Ideal -->
+                    <!-- Data Perhitungan Distance Ideal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Perhitungan Distance/Jarak Ideal<span> | TOPSIS</span></h5>
+                    
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Nilai Ideal Positif</th>
+                                            <th scope="col">Nilai Ideal Negatif</th>
+                    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for distance_ideal in distance_ideal %}
+                                        <tr>
+                    
+                    
+                                            <th scope="row"><a href="#">{{ distance_ideal.no_field }}</a></th>
+                                            <td>{{ distance_ideal.nama }}</td>
+                                            <td>{{ distance_ideal.nilai_ideal_positif }}</td>
+                                            <td>{{ distance_ideal.nilai_ideal_negatif }}</td>
+                    
+                    
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Perhitungan Distance Ideal -->
+                    <!-- Data Prangkingan / Bobot Preferensi  -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                    
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Pembobotan Terakhir dan Ranking<span> | TOPSIS</span></h5>
+                    
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No</th>
+                                            <th scope="col">Nama Karyawan</th>
+                                            <th scope="col">Bobot Preferensi</th>
+                                            <th scope="col">Ranking</th>
+                                            
+                    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for perangkingan in perangkingan %}
+                                        <tr>
+                
+                                            <th scope="row"><a href="#">{{ perangkingan.no_field }}</a></th>
+                                            <td>{{ perangkingan.nama }}</td>
+                                            <td>{{ perangkingan.hasil }}</td>
+                                            <td>{{ perangkingan.ranking }}</td>
+                    
+                    
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <!-- End Data Prangkingan / Bobot Preferensi  -->
+                </div>
+            </div><!-- End Left side columns -->
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+<script src="{% static 'assets/js/table2excel.js'%}"></script>
+
+<script>
+    var table2excel = new Table2Excel();
+
+    document.getElementById('export').addEventListener('click', function () {
+        table2excel.export(document.querySelectorAll('table'));
+    });
+</script>
+<script>
+    function Export2Doc(element, filename = '') {
+        //  _html_ will be replace with custom html
+        var meta = "Mime-Version: 1.0\nContent-Base: " + location.href + "\nContent-Type: Multipart/related; boundary=\"NEXT.ITEM-BOUNDARY\";type=\"text/html\"\n\n--NEXT.ITEM-BOUNDARY\nContent-Type: text/html; charset=\"utf-8\"\nContent-Location: " + location.href + "\n\n<!DOCTYPE html>\n<html>\n_html_</html>";
+        //  _styles_ will be replaced with custome css
+        var head = "<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<style>\n_styles_\n</style>\n</head>\n";
+
+        var html = document.getElementById(element).innerHTML;
+
+        var blob = new Blob(['\ufeff', html], {
+            type: 'application/msword'
+        });
+
+        var css = (
+            '<style>' +
+            'img {width:300px;}table {border-collapse: collapse; border-spacing: 0;}td{padding: 6px;}' +
+            '</style>'
+        );
+        //  Image Area %%%%
+        var options = { maxWidth: 624 };
+        var images = Array();
+        var img = $("#" + element).find("img");
+        for (var i = 0; i < img.length; i++) {
+            // Calculate dimensions of output image
+            var w = Math.min(img[i].width, options.maxWidth);
+            var h = img[i].height * (w / img[i].width);
+            // Create canvas for converting image to data URL
+            var canvas = document.createElement("CANVAS");
+            canvas.width = w;
+            canvas.height = h;
+            // Draw image to canvas
+            var context = canvas.getContext('2d');
+            context.drawImage(img[i], 0, 0, w, h);
+            // Get data URL encoding of image
+            var uri = canvas.toDataURL("image/png");
+            $(img[i]).attr("src", img[i].src);
+            img[i].width = w;
+            img[i].height = h;
+            // Save encoded image to array
+            images[i] = {
+                type: uri.substring(uri.indexOf(":") + 1, uri.indexOf(";")),
+                encoding: uri.substring(uri.indexOf(";") + 1, uri.indexOf(",")),
+                location: $(img[i]).attr("src"),
+                data: uri.substring(uri.indexOf(",") + 1)
+            };
+        }
+
+        // Prepare bottom of mhtml file with image data
+        var imgMetaData = "\n";
+        for (var i = 0; i < images.length; i++) {
+            imgMetaData += "--NEXT.ITEM-BOUNDARY\n";
+            imgMetaData += "Content-Location: " + images[i].location + "\n";
+            imgMetaData += "Content-Type: " + images[i].type + "\n";
+            imgMetaData += "Content-Transfer-Encoding: " + images[i].encoding + "\n\n";
+            imgMetaData += images[i].data + "\n\n";
+
+        }
+        imgMetaData += "--NEXT.ITEM-BOUNDARY--";
+        // end Image Area %%
+
+        var output = meta.replace("_html_", head.replace("_styles_", css) + html) + imgMetaData;
+
+        var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(output);
+
+
+        filename = filename ? filename + '.doc' : 'document.doc';
+
+
+        var downloadLink = document.createElement("a");
+
+        document.body.appendChild(downloadLink);
+
+        if (navigator.msSaveOrOpenBlob) {
+            navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            downloadLink.click();
+        }
+
+        document.body.removeChild(downloadLink);
+    }
+</script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+{% endblock content %}

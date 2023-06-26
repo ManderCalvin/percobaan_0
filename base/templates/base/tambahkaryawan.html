@@ -1,0 +1,72 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+       
+        {% if page == 'ubahprofil' %}
+        <h1>Ubah Profil</h1>
+        {% elif page == 'karyawan'%}
+        <h1>Tambah Karyawan</h1>
+        {% elif page == 'ubahkaryawan'%}
+        <h1>Ubah Karyawan</h1>
+        {% else %}
+        <h1>Halaman Rusak</h1>
+        {% endif %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                {% if page == 'ubahprofil' %}
+                <li class="breadcrumb-item active">Ubah Profil</li>
+                
+                {% elif page == 'karyawan'%}
+                <li class="breadcrumb-item active">Tambah Karyawan</li>
+                {% elif page == 'ubahkaryawan'%}
+                <li class="breadcrumb-item active">Ubah Karyawan</li>
+                {% else %}
+                <li class="breadcrumb-item active">Halaman Rusak</li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+        <div class="card">
+            <div class="card-body">
+                {% if page == 'ubahprofil' %}
+                
+                <h5 class="card-title">Ubah Profil</h5>
+                {% elif page == 'karyawan'%}
+                
+                <h5 class="card-title">Tambah Karyawan</h5>
+                {% elif page == 'ubahkaryawan'%}
+                
+                <h5 class="card-title">Ubah Karyawan</h5>
+                {% else %}
+                
+                <h5 class="card-title">Halaman Rusak</h5>
+                {% endif %}
+                
+        
+                <!-- Horizontal Form -->
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                </form><!-- End Horizontal Form -->
+        
+            </div>
+        </div>
+        </div>
+    </section>
+
+</main><!-- End #main -->
+{% endblock content %}
