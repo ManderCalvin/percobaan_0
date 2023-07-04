@@ -7,16 +7,25 @@ from django.contrib.auth.decorators import login_required
 import pandas as pd
 from django.db import models
 import math
-import decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import DecimalField
 from django import forms
 from statistics import mean
 from django.db.models import Q
+from dateutil.relativedelta import relativedelta
+import mathfilters
 
 @login_required(login_url='login')
 def home(request):
     page = 'home'
     penilaian = Penilaian.objects.all() 
+    for p in penilaian:
+        # Use divmod to calculate years and remaining months
+        years, months = divmod(p.nilai_masa_kerja, 12)
+        # Add these new fields to the penilaian instance
+        p.years = years
+        p.months = months
+    
     if Nilai_Ahp.objects.exclude(nama_kriteria__isnull=False).exists():
         nilai_ahp_ada = 'No'
     elif Nilai_Ahp.objects.exclude(value_kriteria__isnull=False).exists():
@@ -263,6 +272,16 @@ def perhitungan(request):
     filtered_scores3 = Penilaian.objects.values(*nilai_ahps_list)
     filtered_scores2 = list(filtered_scores3)
     filtered_scores = pd.DataFrame.from_records(filtered_scores2)
+
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
+
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    filtered_scores = filtered_scores.astype(
+        float).applymap(perubahan_pembulatan)
     filtered_scores = filtered_scores.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
 
 
@@ -379,6 +398,242 @@ def perhitungan(request):
 
     # Ranking
     penilaian_ranking = Penilaian.objects.values(
+        'id', 'nama_id__nama')
+    g_square = pd.DataFrame.from_records(list(penilaian_ranking))
+    penilaian_ranking1 = Penilaian.objects.values(*nilai_ahps_list)
+    g_square1 = pd.DataFrame.from_records(list(penilaian_ranking1))
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
+
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    g_square1 = g_square1.astype(
+        float).applymap(perubahan_pembulatan)
+    
+    g_value = pd.concat([g_square, g_square1, f_square1], axis=1)
+    
+
+    g_value.rename(columns={'nama_id__nama': 'nama'}, inplace=True)
+    #g_value['ranking'] = g_value['bobot_preferensi'].rank(
+        #method='dense', ascending=False).round(1)
+
+    cols = list(g_value.columns)
+    # remove 'c' from the list of columns
+
+    cols.remove('bobot_preferensi')
+
+    # insert 'c' at the start of the list
+    cols.insert(2, 'bobot_preferensi')
+
+
+    # rearrange the columns
+    g_value = g_value[cols]
+
+
+
+
+    bobot_ahps = Nilai_Ahp.objects.all()
+    g_square = {bobot_ahp.nama_kriteria: float(
+        bobot_ahp.value_kriteria) for bobot_ahp in bobot_ahps}
+
+
+    # urutkan kriteria berdasarkan nilai mereka (dalam hal ini prioritas)
+    criterion_sorted = dict(
+        sorted(g_square.items(), key=lambda item: item[1], reverse=True))
+
+    # tambahkan 'id' sebagai kriteria akhir jika semua nilai lainnya sama
+    # criterion_sorted['id'] = 0
+
+    # urutkan DataFrame berdasarkan 'bobot_preferensi' dan kriteria lainnya
+    g_value = g_value.sort_values(by=['bobot_preferensi'] + list(
+        criterion_sorted.keys()), ascending=[False] + [False]*len(criterion_sorted))
+
+    # atur ulang index dan hapus kolom index lama
+    g_value.reset_index(drop=True, inplace=True)
+
+    # tambahkan kolom ranking
+    g_value['ranking'] = g_value.index + 1
+    
+    cols1 = list(g_value.columns)
+    # remove 'c' from the list of columns
+    cols1.remove('ranking')
+
+    # insert 'c' at the start of the list
+
+    cols1.insert(3, 'ranking')
+
+    # rearrange the columns
+    g_value = g_value[cols1]
+    g_value = g_value.to_html(classes="table table-bordered table-striped table-hover table-condensed", justify='left')
+
+    
+    # Data AHP
+    data_ahp = Nilai_Ahp.objects.all().values()
+    data_ahp = list(data_ahp)
+    data_ahp = pd.DataFrame.from_records(data_ahp)
+    data_ahp = data_ahp.to_html(
+        classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+
+    context = {
+        'penilaian': penilaian,
+        'pandaspd': pandaspd,
+        'page': page,
+        'b_value': b_value,
+        'c_value': c_value,
+        'd_value': d_value,
+        'e_value': e_value,
+        'f_value': f_value,
+        'g_value': g_value,
+        'filtered_scores': filtered_scores,
+        'data_ahp': data_ahp
+  
+    }
+    return render(request, 'base/perhitungan.html', context)
+
+@login_required(login_url='login')
+def perhitungan_wp(request):
+    page = 'wp'
+    penilaian = Penilaian.objects.all()
+    
+    # Data AHP
+    data_ahp = Nilai_Ahp.objects.all().values()
+    data_ahp = list(data_ahp)
+    data_ahp = pd.DataFrame.from_records(data_ahp)
+    data_ahp1 = pd.DataFrame.from_records(data_ahp)
+    data_ahp = data_ahp.to_html(
+        classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    
+    # Views Penilaian based on nama_kriteria in Nilai_Ahp
+    nilai_ahps = Nilai_Ahp.objects.all()
+    nilai_ahps_list = [nilai_ahp.nama_kriteria for nilai_ahp in nilai_ahps]
+    filtered_scores3 = Penilaian.objects.values(*nilai_ahps_list)
+    filtered_scores2 = list(filtered_scores3)
+    filtered_scores = pd.DataFrame.from_records(filtered_scores2)
+    
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
+
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    filtered_scores = filtered_scores.astype(float).applymap(perubahan_pembulatan)
+    filtered_scores = filtered_scores.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Normalisasi
+    b_valu = pd.DataFrame.from_records(filtered_scores2)
+    b_value = pd.DataFrame.from_records(filtered_scores2)
+    b_value1 = pd.DataFrame.from_records(filtered_scores2)
+    
+    for i in range(len(b_valu)):
+        for j in range(len(b_valu.columns.values)):
+            b_value.iloc[i, j] = round(b_valu.iloc[i, j] / sum(b_valu[b_valu.columns.values[j]]), 6)
+            b_value1.iloc[i, j] = round(b_valu.iloc[i, j] / sum(b_valu[b_valu.columns.values[j]]), 6)
+
+    b_value = b_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    
+    bobot_ahps = Nilai_Ahp.objects.all()
+    
+    # Normalisasi Bobot Kriteria
+    b1_valu = data_ahp1.copy()
+    b1_value = data_ahp1.copy()
+    b1_value1 = data_ahp1.copy()
+    for i in range(len(b1_valu)):
+        b1_value.loc[i, 'value_kriteria'] = round(b1_valu.loc[i, 'value_kriteria']/sum(b1_valu['value_kriteria']), 6)
+    b1_value = b1_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+
+    # Normalisasi X Bobot Nilai AHp
+    c_value = b_value1.copy()
+    c_value1 = b_value1.copy()
+    c_value2 = b_value1.copy()
+
+    c_square = {bobot_ahp.nama_kriteria: float(bobot_ahp.value_kriteria) for bobot_ahp in bobot_ahps}
+
+    for i in range(len(b_valu)):
+        for j in range(len(c_square)):
+            c_value.iloc[i, j] = round(float(c_value1.iloc[i, j]) ** c_square[c_value1.columns.values[j]], 6)
+            c_value2.iloc[i, j] = round(float(c_value1.iloc[i, j]) ** c_square[c_value1.columns.values[j]], 6)
+    c_value = c_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Nilai Asli X Bobot Nilai AHp
+    d_value = b_valu.copy()
+    d_value1 = b_valu.copy()
+    d_value2 = b_valu.copy()
+
+    d_square = {bobot_ahp.nama_kriteria: float(
+        bobot_ahp.value_kriteria) for bobot_ahp in bobot_ahps}
+
+    for i in range(len(b_valu)):
+        for j in range(len(c_square)):
+            d_value.iloc[i, j] = round(float(d_value1.iloc[i, j]) ** d_square[d_value1.columns.values[j]], 6)
+            d_value2.iloc[i, j] = round(float(d_value1.iloc[i, j]) ** d_square[d_value1.columns.values[j]], 6)
+    d_value = d_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    
+    # Nilai Vektor (# Nilai Asli X Bobot Nilai AHp)
+    e_value = d_value2.copy()
+    e_list = e_value.prod(axis=1).round(decimals=6).to_list()
+    e_value = e_list
+    e_square = pd.Series(e_list, name='nilai_vektor')
+    
+    nama_awal = Penilaian.objects.all()
+    e_square1 = list()
+    for i in nama_awal:
+        e_square1.append(i.nama.nama)
+    e_square1 = pd.Series(e_square1, name='nama')
+
+    e_value = pd.concat([e_square1, e_square], axis=1)
+    e_value1 = pd.concat([e_square1, e_square], axis=1)
+    e_value2 = pd.concat([e_square1, e_square], axis=1)
+    e_value = e_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Nilai Vektor (# Normalisasi X Bobot Nilai AHp)
+    e1_value = c_value2.copy()
+    e1_list = e1_value.prod(axis=1).to_list()
+    e1_value = e1_list
+    e1_square = pd.Series(e1_list, name='nilai_vektor')
+
+    nama_awal1 = Penilaian.objects.all()
+    e1_square1 = list()
+    for i in nama_awal1:
+        e1_square1.append(i.nama.nama)
+    e1_square1 = pd.Series(e1_square1, name='nama')
+
+    e1_value = pd.concat([e1_square1, e1_square], axis=1)
+    e1_value1 = pd.concat([e1_square1, e1_square], axis=1)
+    e1_value2 = pd.concat([e1_square1, e1_square], axis=1)
+    e1_value = e1_value.to_html(
+        classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Nilai Bobot Preferensi (# Normalisasi X Bobot Nilai AHp)
+    f1_valu = e1_value1.copy()
+    f1_value = e1_value1.copy()
+    f1_value1 = e1_value1.copy()
+    f1_square = list()
+    for i in range(len(e1_value2)):
+        f1_value.iloc[i, 1] = f1_valu.iloc[i, 1] / sum(f1_valu['nilai_vektor'])
+        f1_value1.iloc[i, 1] = f1_valu.iloc[i, 1] / sum(f1_valu['nilai_vektor'])
+        f1_square.append(f1_valu.iloc[i, 1] / sum(f1_valu['nilai_vektor']))
+    f1_value = f1_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    f1_square1 = pd.Series(f1_square, name='bobot_preferensi')
+    
+    # Nilai Bobot Preferensi
+    f_valu = e_value1.copy()
+    f_value = e_value1.copy()
+    f_value1 = e_value1.copy()
+    f_square = list()
+    for i in range(len(e_value2)):
+        f_value.iloc[i, 1] = f_valu.iloc[i, 1] / sum(f_valu['nilai_vektor'])
+        f_value1.iloc[i, 1] = f_valu.iloc[i, 1] / sum(f_valu['nilai_vektor'])
+        f_square.append(f_valu.iloc[i, 1] / sum(f_valu['nilai_vektor']))
+    f_value = f_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    f_square1 = pd.Series(f_square, name='bobot_preferensi')
+
+    # Ranking
+    penilaian_ranking = Penilaian.objects.values(
         'id', 'nama_id__nama', *nilai_ahps_list)
     g_square = pd.DataFrame.from_records(list(penilaian_ranking))
     g_value = pd.concat([g_square, f_square1], axis=1)
@@ -399,40 +654,244 @@ def perhitungan(request):
     # rearrange the columns
     g_value = g_value[cols]
     g_value['ranking'] = g_value['ranking'].astype(int)
-    g_value = g_value.to_html(classes="table table-bordered table-striped table-hover table-condensed", justify='left')
+    g_value = g_value.sort_values(by='ranking', ascending=True)    
+    g_value = g_value.to_html(
+        classes="table table-bordered table-striped table-hover table-condensed", justify='left')
+    
+    # Ranking (Normalisasi)
+    penilaian_ranking = Penilaian.objects.values('id', 'nama_id__nama')
+    g1_square = pd.DataFrame.from_records(list(penilaian_ranking))
+    penilaian_ranking1 = Penilaian.objects.values(*nilai_ahps_list)
+    g1_square1 = pd.DataFrame.from_records(list(penilaian_ranking1))
 
-    querypandas = pd.Series(
-        pandaspd['nilai_kehadiran']*pandaspd['nilai_kehadiran'], name='Jumlah')
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
 
-    data = pd.concat([pandaspd, querypandas], axis=1)
-    htmlqu = data.to_html(
-        classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    g1_square1 = g1_square1.astype(
+        float).applymap(perubahan_pembulatan)
+        
+    g1_value = pd.concat([g1_square, g1_square1, f1_square1], axis=1)
+
+    g1_value.rename(columns={'nama_id__nama': 'nama'}, inplace=True)
+    #g1_value['ranking'] = g1_value['bobot_preferensi'].rank(
+        #method='dense', ascending=False).round(1)
+
+    cols1 = list(g1_value.columns)
+    # remove 'c' from the list of columns
+    #cols1.remove('ranking')
+    cols1.remove('bobot_preferensi')
+
+    # insert 'c' at the start of the list
+    cols1.insert(2, 'bobot_preferensi')
+    #cols1.insert(3, 'ranking')
+
+    # rearrange the columns
+    g1_value = g1_value[cols1]
+    #g1_value['ranking'] = g1_value['ranking'].astype(int)
+    
+    bobot_ahps = Nilai_Ahp.objects.all()
+    g_square = {bobot_ahp.nama_kriteria: float(
+        bobot_ahp.value_kriteria) for bobot_ahp in bobot_ahps}
+
+    # urutkan kriteria berdasarkan nilai mereka (dalam hal ini prioritas)
+    criterion_sorted = dict(
+        sorted(g_square.items(), key=lambda item: item[1], reverse=True))
+
+    # tambahkan 'id' sebagai kriteria akhir jika semua nilai lainnya sama
+    # criterion_sorted['id'] = 0
+
+    # urutkan DataFrame berdasarkan 'bobot_preferensi' dan kriteria lainnya
+    g1_value = g1_value.sort_values(by=['bobot_preferensi'] + list(
+        criterion_sorted.keys()), ascending=[False] + [False]*len(criterion_sorted))
+
+    # atur ulang index dan hapus kolom index lama
+    g1_value.reset_index(drop=True, inplace=True)
+
+    # tambahkan kolom ranking
+    g1_value['ranking'] = g1_value.index + 1
+
+    cols1 = list(g1_value.columns)
+    # remove 'c' from the list of columns
+    cols1.remove('ranking')
+
+    # insert 'c' at the start of the list
+
+    cols1.insert(3, 'ranking')
+
+    # rearrange the columns
+    g1_value = g1_value[cols1]
+    g1_value = g1_value.to_html(
+        classes="table table-bordered table-striped table-hover table-condensed", justify='left')
+
+    
+    context = {
+        'page': page,
+        'penilaian': penilaian,
+        'filtered_scores': filtered_scores,
+        'data_ahp': data_ahp,
+        'b1_value': b1_value,
+        'b_value': b_value,
+        'c_value': c_value,
+        'd_value': d_value,
+        'e_value': e_value,
+        'e1_value': e1_value,
+        'f_value': f_value,
+        'f1_value': f1_value,
+        'g_value': g_value,
+        'g1_value': g1_value
+        
+    }
+
+    return render(request, 'base/perhitungan_wp.html', context)
+
+@login_required(login_url='login')
+def perhitungan_saw(request):
+    page = 'saw'
+    penilaian = Penilaian.objects.all()
     
     # Data AHP
     data_ahp = Nilai_Ahp.objects.all().values()
     data_ahp = list(data_ahp)
     data_ahp = pd.DataFrame.from_records(data_ahp)
+    data_ahp1 = pd.DataFrame.from_records(data_ahp)
     data_ahp = data_ahp.to_html(
         classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+    
+    # Views Penilaian based on nama_kriteria in Nilai_Ahp
+    nilai_ahps = Nilai_Ahp.objects.all()
+    nilai_ahps_list = [nilai_ahp.nama_kriteria for nilai_ahp in nilai_ahps]
+    filtered_scores3 = Penilaian.objects.values(*nilai_ahps_list)
+    filtered_scores2 = list(filtered_scores3)
+    filtered_scores = pd.DataFrame.from_records(filtered_scores2)
+    hahaha = pd.DataFrame.from_records(filtered_scores2)
 
+
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
+
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    filtered_scores = hahaha.astype(float).applymap(perubahan_pembulatan)
+    filtered_scores = filtered_scores.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Normalisasi
+    b_valu = pd.DataFrame.from_records(filtered_scores2)
+    b_value = pd.DataFrame.from_records(filtered_scores2)
+    b_value1 = pd.DataFrame.from_records(filtered_scores2)
+    
+    for i in range(len(b_valu)):
+        for j in range(len(b_valu.columns.values)):
+            b_value.iloc[i, j] = round(b_valu.iloc[i, j] / max(b_valu[b_valu.columns.values[j]]), 6)
+            b_value1.iloc[i, j] = round(b_valu.iloc[i, j] / max(b_valu[b_valu.columns.values[j]]), 6)
+
+    b_value = b_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Normalisasi X Bobot Nilai AHp
+    c_value = b_value1.copy()
+    c_value1 = b_value1.copy()
+    c_value2 = b_value1.copy()
+
+    c_square = {bobot_ahp.nama_kriteria: float(bobot_ahp.value_kriteria) for bobot_ahp in nilai_ahps}
+
+    for i in range(len(b_valu)):
+        for j in range(len(c_square)):
+            c_value.iloc[i, j] = round(float(c_value1.iloc[i, j]) * c_square[c_value1.columns.values[j]], 6)
+            c_value2.iloc[i, j] = round(float(c_value1.iloc[i, j]) * c_square[c_value1.columns.values[j]], 6)
+    c_value = c_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+
+    # Nilai Sum
+    e1_value1 = c_value2.copy()
+   
+    e1_list = e1_value1.sum(axis=1).to_list()
+    e1_value = pd.Series(e1_list, name='bobot_preferensi')
+    e1_value2 = pd.Series(e1_list, name='bobot_preferensi')
+    e1_value = pd.concat([e1_value1, e1_value], axis=1)
+    e1_value = e1_value.to_html(classes="table table-condensed table-bordered table-striped table-hover", justify='left')
+   
+    # Ranking
+    penilaian_ranking = Penilaian.objects.values('id', 'nama_id__nama')
+    penilaian_ranking1 = Penilaian.objects.values(*nilai_ahps_list)
+        
+    f1_square = pd.DataFrame.from_records(list(penilaian_ranking))
+    f1_square1 = pd.DataFrame.from_records(list(penilaian_ranking1))
+    
+    def perubahan_pembulatan(x):
+        if x % 1 == 0:
+            return int(x)
+        else:
+            return Decimal(x).quantize(Decimal('0.0'), rounding=ROUND_HALF_UP)
+
+    # Convert the Decimal objects to float, round, and convert back to Decimal
+    f1_square1 = f1_square1.astype(
+        float).applymap(perubahan_pembulatan)
+    
+    f1_value = pd.concat([f1_square, f1_square1, e1_value2], axis=1)
+    f1_value.rename(columns={'nama_id__nama': 'nama'}, inplace=True)
+    #f1_value['ranking'] = f1_value['bobot_preferensi'].rank(
+        #method='dense', ascending=False).round(1)
+
+
+    bobot_ahps = Nilai_Ahp.objects.all()
+    g_square = {bobot_ahp.nama_kriteria: float(
+        bobot_ahp.value_kriteria) for bobot_ahp in bobot_ahps}
+
+    # urutkan kriteria berdasarkan nilai mereka (dalam hal ini prioritas)
+    criterion_sorted = dict(
+        sorted(g_square.items(), key=lambda item: item[1], reverse=True))
+
+    # tambahkan 'id' sebagai kriteria akhir jika semua nilai lainnya sama
+    # criterion_sorted['id'] = 0
+
+    # urutkan DataFrame berdasarkan 'bobot_preferensi' dan kriteria lainnya
+    f1_value = f1_value.sort_values(by=['bobot_preferensi'] + list(
+        criterion_sorted.keys()), ascending=[False] + [False]*len(criterion_sorted))
+    # atur ulang index dan hapus kolom index lama
+    f1_value.reset_index(drop=True, inplace=True)
+
+    # tambahkan kolom ranking
+    f1_value['ranking'] = f1_value.index + 1
+
+    cols1 = list(f1_value.columns)
+    # remove 'c' from the list of columns
+    cols1.remove('bobot_preferensi')
+    cols1.remove('ranking')
+
+    # insert 'c' at the start of the list
+    cols1.insert(2, 'bobot_preferensi')
+    cols1.insert(3, 'ranking')
+
+    # rearrange the columns
+    f1_value = f1_value[cols1]
+    f1_value = f1_value.to_html(
+        classes="table table-bordered table-striped table-hover table-condensed", justify='left')
+
+    
     context = {
-        'penilaian': penilaian,
-        'pandaspd': pandaspd,
         'page': page,
-        'data': data,
-        'querypandas': querypandas,
-        'htmlqu': htmlqu,
+        'penilaian': penilaian,
+        'data_ahp': data_ahp,
+        'filtered_scores': filtered_scores,
+
         'b_value': b_value,
         'c_value': c_value,
-        'd_value': d_value,
-        'e_value': e_value,
-        'f_value': f_value,
-        'g_value': g_value,
-        'filtered_scores': filtered_scores,
-        'data_ahp': data_ahp
-  
+
+        'e1_value': e1_value,
+
+        'f1_value': f1_value,
+
+
+        
     }
-    return render(request, 'base/perhitungan.html', context)
+
+
+    return render(request, 'base/perhitungan_saw.html', context)
+
 
 @login_required(login_url='login')
 def karyawan(request):
@@ -488,9 +947,51 @@ def tambahkaryawan(request):
             user = form.save(commit=False)
             user.username = user.username
             user.save()
+            
+            
+            # Simpan ke Model Penilaian
+            penilaian = Penilaian()
+            penilaian.nama = user  # Assign User instance to nama field
+            penilaian.nilai_performa_penjualan = 0
+            # SImpan Nilai Pengetahuan Produk
+            if user.nilai_pengetahuan_produk > 10 and user.nilai_pengetahuan_produk <= 100:
+                nilai_pengetahuan = ((float(user.nilai_pengetahuan_produk)-0) / (100-0)) * (10-0) + 0
+            elif user.nilai_pengetahuan_produk <= 5:
+                nilai_pengetahuan = ((float(user.nilai_pengetahuan_produk)-0) / (5-0)) * (10-0) + 0
+            else:
+                nilai_pengetahuan = user.nilai_pengetahuan_produk
+            
+            penilaian.nilai_pengetahuan_produk = nilai_pengetahuan
+            penilaian.nilai_disiplin = 0
+            penilaian.nilai_kehadiran = 0
+            
+
+
+
+            def calculate_months(date1, date2):
+                r = relativedelta(date2, date1)
+                return r.years*12 + r.months
+            months = calculate_months(user.tgl_masuk, user.hari_ini)
+            if months < 12:
+                bulan = 0
+            elif months >= 12 and months < 24:
+                bulan = 1
+            elif months >= 24 and months < 60:
+                bulan = 2
+            elif months >= 60 and months < 120:
+                bulan = 3
+            elif months >= 120 and months <180:
+                bulan = 4
+            elif months >= 180:
+                bulan = 5
+            penilaian.nilai_masa_kerja = bulan
+            penilaian.bulan_penilaian = '2023-05'  # You might want to set this dynamically
+            penilaian.save()  
+            
             messages.success(request, 'Karyawan ' + user.username + ' berhasil ditambahkan')
             return redirect('data_karyawan')
         
+
         else:
             messages.error(request, 'An Error occured during registration')
     context = {
@@ -518,7 +1019,6 @@ def ubahkaryawan(request, pk):
         if form.is_valid():
             form.save(commit=False)
             user.nama = user.nama
-            
             user.set_password(user.password)
             user.save()
             
@@ -529,11 +1029,32 @@ def ubahkaryawan(request, pk):
                 nilai_pengetahuan = ((float(user.nilai_pengetahuan_produk)-0) / (5-0)) * (10-0) + 0
             else:
                 nilai_pengetahuan = user.nilai_pengetahuan_produk
-            
+                
+        
             user_pengetahuan = Penilaian.objects.get(nama=pengetahuan.id)
+            
+            # Melihat Total Bulan
+            def calculate_months(date1, date2):
+                r = relativedelta(date2, date1)
+                return r.years*12 + r.months
+            months = calculate_months(user.tgl_masuk, user.hari_ini)    
+            
+            if months < 12:
+                bulan = 0
+            elif months >= 12 and months < 24:
+                bulan = 1
+            elif months >= 24 and months < 60:
+                bulan = 2
+            elif months >= 60 and months < 120:
+                bulan = 3
+            elif months >= 120 and months <180:
+                bulan = 4
+            elif months >= 180:
+                bulan = 5            
+            user_pengetahuan.nilai_masa_kerja = bulan
             user_pengetahuan.nilai_pengetahuan_produk = nilai_pengetahuan
             user_pengetahuan.save()
-            
+
 
             messages.success(request, 'Karyawan bernama ' +
                              user.nama + ' berhasil diubah datanya')
@@ -679,11 +1200,41 @@ def ubahperforma_penjualan(request, pk):
             performa_penjualan.nama = performa_penjualan.nama
             performa_penjualan.save()
             
+
             # Save into another model or table
-            
-            nilai_performa_penjualan = (2*performa_penjualan.jual_brands)+performa_penjualan.jual_brands_lain
-            nama_performa_penjualan = Penilaian.objects.get(nama=performa_penjualan.nama)
-            nama_performa_penjualan.nilai_kehadiran = nilai_performa_penjualan
+
+            if performa_penjualan.jual_brands < 80:
+                nilai_brands = 0
+            elif performa_penjualan.jual_brands >= 80 and performa_penjualan.jual_brands < 95:
+                nilai_brands = 1
+            elif performa_penjualan.jual_brands >= 95 and performa_penjualan.jual_brands < 100:
+                nilai_brands = 2
+            elif performa_penjualan.jual_brands >= 100 and performa_penjualan.jual_brands < 110:
+                nilai_brands = 3
+            elif performa_penjualan.jual_brands >= 110 and performa_penjualan.jual_brands < 120:
+                nilai_brands = 4
+            elif performa_penjualan.jual_brands >= 120:
+                nilai_brands = 5
+
+
+
+            if performa_penjualan.jual_brands_lain < 300:
+                nilai_brands_lain = 0
+            elif performa_penjualan.jual_brands_lain >= 300 and performa_penjualan.jual_brands_lain < 350:
+                nilai_brands_lain = 1
+            elif performa_penjualan.jual_brands_lain >= 350 and performa_penjualan.jual_brands_lain < 400:
+                nilai_brands_lain = 2
+            elif performa_penjualan.jual_brands_lain >= 400 and performa_penjualan.jual_brands_lain < 450:
+                nilai_brands_lain = 3
+            elif performa_penjualan.jual_brands_lain >= 450 and performa_penjualan.jual_brands_lain < 500:
+                nilai_brands_lain = 4
+            elif performa_penjualan.jual_brands_lain >= 450:
+                nilai_brands_lain = 5
+
+            value_performa_penjualan = (nilai_brands + nilai_brands_lain)/2
+            nama_performa_penjualan = Penilaian.objects.get(
+                nama=performa_penjualan.nama)
+            nama_performa_penjualan.nilai_performa_penjualan = value_performa_penjualan
             nama_performa_penjualan.save()
             
             messages.success(request, 'Karyawan bernama ' + str(performa_penjualan.nama) + ' berhasil diubah Performa Penjualannya')

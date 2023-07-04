@@ -21,6 +21,9 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('home/', views.home1, name='home1'),
     path('perhitungan/', views.perhitungan, name='perhitungan'),
+    path('perhitungan_wp/', views.perhitungan_wp, name='perhitungan_wp'),
+    path('perhitungan_saw/', views.perhitungan_saw, name='perhitungan_saw'),
+    
     path('datakaryawan/', views.karyawan, name='data_karyawan'),
     path('tambahkaryawan/', views.tambahkaryawan, name='tambah_karyawan'),
     path('login/', views.loginPage, name='login'),
@@ -38,6 +41,8 @@ urlpatterns = [
     path('ubahperformapenjualan/<str:pk>/', views.ubahperforma_penjualan, name='ubahperformapenjualan'),
     
     path('ahp/', views.show_ahp, name='nilai_ahp'),
-    path('ahp/perhitungan_ahp', views.perhitungan_ahp, name='perhitungan_ahp')
+    path('ahp/perhitungan_ahp', views.perhitungan_ahp, name='perhitungan_ahp'),
+    
+    
     
 ]

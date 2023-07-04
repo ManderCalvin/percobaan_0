@@ -5,19 +5,19 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-        <h1>Perhitungan TOPSIS (Technique For Order of Preference by Similarity To Ideal Solution)</h1>
+        <h1>Perhitungan WP (Weight Product)</h1>
         
         <button class="btn btn-primary btn-lg" onclick="Export2Doc('container');">Cetak Dalam Word </button>
         <button class="btn btn-success btn-lg" id="export">Cetak Dalam Excel </button>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                <li class="breadcrumb-item active">Perhitungan TOPSIS</li>
+                <li class="breadcrumb-item active">Perhitungan WP</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
-    <section id="container"class="section dashboard">
+    <section id="container" class="section dashboard">
         <div class="row">
 
             <!-- Left side columns -->
@@ -29,7 +29,8 @@
                         <div class="card recent-sales overflow-auto">
                             <div class="card-body">
                                 <h5 class="card-title">Nilai Karyawan <span>| Total Karyawan 18</span></h5>
-                                    <table id="example-table"class="table table-condensed">
+
+                                    <table id="example-table" class="table table-condensed">
                                         <thead>
                                             <tr>
                                                 <th scope="col">id</th>
@@ -143,7 +144,6 @@
                                         </tbody>
                                     </table>
 
-
                             </div>
 
                         </div>
@@ -156,7 +156,7 @@
                                 <h5 class="card-title">Nilai Bobot TOPSIS <span>| Didapatkan Dari Hasil AHP</span></h5>
                                 {{data_ahp|safe}}
                             </div>
-                    
+
                         </div>
                     </div>
                     <!-- End Awal -->
@@ -164,20 +164,35 @@
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
                             <div class="card-body">
-                                <h5 class="card-title">Matriks Awal <span>| Perhitungan TOPSIS</span></h5>
+                                <h5 class="card-title">Matriks Awal <span>| Perhitungan Weight Product (WP)</span></h5>
                                 {{filtered_scores|safe}}
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Awal -->
+                    <!-- Data Bobot Normalisasi  -->
+                    <div class="col-12">
+                    
+                        <div class="card recent-sales overflow-auto">
+                    
+                            <div class="card-body">
+                                <h5 class="card-title">Normalisasi Kriteria<span> | Perhitungan Weight Product (WP)</span></h5>
+                    
+                                {{b1_value|safe}}
+                    
                             </div>
                     
                         </div>
                     </div>
-                    <!-- End Awal -->
+                    <!-- End Data Bobot Normalisasi  -->
                     <!-- Data Normalisasi  -->
                     <div class="col-12">
-                        
+
                         <div class="card recent-sales overflow-auto">
-  
+
                             <div class="card-body">
-                                <h5 class="card-title">Normalisasi <span> | Perhitungan TOPSIS</span></h5>
+                                <h5 class="card-title">Normalisasi <span> | Perhitungan Weight Product (WP)</span></h5>
 
                                 {{b_value|safe}}
 
@@ -189,42 +204,57 @@
                     <!-- Data Normalisasi Terbobot -->
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
-                    
-                    
+
+
                             <div class="card-body">
-                                <h5 class="card-title">Normalisasi Terbobot<span> | Perhitungan TOPSIS</span></h5>
-                    
+                                <h5 class="card-title">Normalisasi x Bobot Kriteria<span> | Perhitungan Weight Product (WP)</span></h5>
+
                                 {{c_value|safe}}
-                    
+
                             </div>
-                    
+
                         </div>
                     </div>
                     <!-- End Data Normalisasi Terbobot -->
                     <!-- Data Bobot Ideal -->
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
-                    
-                    
+
+
                             <div class="card-body">
-                                <h5 class="card-title">Bobot Ideal<span> | Perhitungan TOPSIS</span></h5>
-                    
+                                <h5 class="card-title">Nilai Asli x Bobot Kriteria<span> | Perhitungan Weight Product (WP)</span></h5>
+
                                 {{d_value|safe}}
-                    
+
                             </div>
-                    
+
                         </div>
                     </div>
                     <!-- End Data Bobot Ideal -->
                     <!-- Data Perhitungan Distance Ideal -->
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
+
+
+                            <div class="card-body">
+                                <h5 class="card-title">Perhitungan Nilai Vektor<span> | Perhitungan Weight Product (WP)</span></h5>
+
+                                {{e_value|safe}}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Perhitungan Distance Ideal -->
+                    <!-- Data Perhitungan Distance Ideal -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
                     
                     
                             <div class="card-body">
-                                <h5 class="card-title">Perhitungan Distance/Jarak Ideal<span> | Perhitungan TOPSIS</span></h5>
+                                <h5 class="card-title">Perhitungan Nilai Vektor (Nilai Normalisasi)<span> | Perhitungan Weight Product (WP)</span></h5>
                     
-                                {{e_value|safe}}
+                                {{e1_value|safe}}
                     
                             </div>
                     
@@ -234,12 +264,29 @@
                     <!-- Data Bobot Preferensi  -->
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
+
+
+                            <div class="card-body">
+                                <h5 class="card-title">Bobot Preferensi<span> | Perhitungan Weight Product (WP)</span>
+                                </h5>
+
+                                {{f_value|safe}}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Bobot Preferensi  -->
+                    <!-- Data Bobot Preferensi  -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
                     
                     
                             <div class="card-body">
-                                <h5 class="card-title">Pembobotan Terakhir dan Ranking<span> | Perhitungan TOPSIS</span></h5>
+                                <h5 class="card-title">Bobot Preferensi (Normalisasi)<span> | Perhitungan Weight Product (WP)</span>
+                                </h5>
                     
-                                    {{f_value|safe}}
+                                {{f1_value|safe}}
                     
                             </div>
                     
@@ -249,18 +296,35 @@
                     <!-- Data Prangkingan / Bobot Preferensi  -->
                     <div class="col-12">
                         <div class="card recent-sales overflow-auto">
+
+
+                            <div class="card-body">
+                                <h5 class="card-title">Ranking<span> | Perhitungan Weight Product (WP)</span>
+                                </h5>
+
+                                {{g_value|safe}}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Data Prangkingan  -->
+                    <!-- Data Prangkingan Normalisasi -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
                     
                     
                             <div class="card-body">
-                                <h5 class="card-title">Pembobotan Terakhir dan Ranking<span> | Perhitungan TOPSIS</span></h5>
+                                <h5 class="card-title">Ranking Normalisasi<span> | Perhitungan Weight Product (WP)</span>
+                                </h5>
                     
-                                    {{g_value|safe}}
+                                {{g1_value|safe}}
                     
                             </div>
                     
                         </div>
                     </div>
-                    <!-- End Data Prangkingan / Bobot Preferensi  -->
+                    <!-- End Data Prangkingan Normalisasi  -->
                 </div>
             </div><!-- End Left side columns -->
 

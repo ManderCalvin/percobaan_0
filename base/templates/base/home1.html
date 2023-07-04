@@ -47,26 +47,86 @@
                                                 <th scope="col">id</th>
                                                 <th scope="col">Nama Karyawan</th>
                                                 <th scope="col">Nilai performa Penjualan</th>
+                                                <th scope="col">Kategori Performa Penjualan</th>
                                                 <th scope="col">Nilai Pengetahuan Produk</th>
                                                 <th scope="col">Nilai Disiplin</th>
                                                 <th scope="col">Nilai Kehadiran</th>
                                                 <th scope="col">Nilai Masa Kerja</th>
-                                                
+                                                <th scope="col">Kategori Masa Kerja</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        
+                                            
                                             <tr>
                                                 <th scope="row">{{ penilaian.id }}</th>
                                                 <td>{{ penilaian.nama }}</td>
                                                 <td>{{ penilaian.nilai_performa_penjualan|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_pengetahuan_produk|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_disiplin|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_kehadiran|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_masa_kerja|floatformat:"0" }} Bulan</td>
-                                                
+                                    
+                                                {% if penilaian.nilai_performa_penjualan < 0 %} <td>
+                                                    Nilai SALAH !!
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 0 %}
+                                                    <td>
+                                                        Performa Buruk
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 1 or penilaian.nilai_performa_penjualan == 2 %}
+                                                    <td>
+                                                        Tidak Melebihi Target
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 3 or penilaian.nilai_performa_penjualan == 4 %}
+                                                    <td>
+                                                        Sesuai Target
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 5 or penilaian.nilai_performa_penjualan == 6%}
+                                                    <td>
+                                                        Melebihi Target
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 7 or penilaian.nilai_performa_penjualan == 8 %}
+                                                    <td>
+                                                        Performa Baik
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan == 9 or penilaian.nilai_performa_penjualan == 10 %}
+                                                    <td>
+                                                        Performa sangat Baik
+                                                    </td>
+                                                    {% elif penilaian.nilai_performa_penjualan > 10 %}
+                                                    <td>
+                                                        Nilai SALAH !!
+                                                    </td>
+                                                    {% endif %}
+                                                    <td>{{ penilaian.nilai_pengetahuan_produk|floatformat:"1" }}</td>
+                                                    <td>{{ penilaian.nilai_disiplin|floatformat:"0" }}</td>
+                                                    <td>{{ penilaian.nilai_kehadiran|floatformat:"0" }}</td>
+                                                    <td>{{ penilaian.nilai_masa_kerja|floatformat:"0" }}</td>
+                                                    {% if penilaian.nilai_masa_kerja == 0 %}
+                                                    <td>
+                                                        Kurang dari 1 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 1%}
+                                                    <td>
+                                                        Lebih dari 1 Tahun, di bawah 2 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 2 %}
+                                                    <td>
+                                                        Lebih dari 2 tahun, di bawah 5 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 3 %}
+                                                    <td>
+                                                        Lebih dari 5 tahun, di bawah 10 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 4 %}
+                                                    <td>
+                                                        Lebih dari 10 tahun, di bawah 15 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 5 %}
+                                                    <td>
+                                                        Lebih dari 15 Tahun
+                                                    </td>
+                                                    {% endif %}
+                                                    
                                             </tr>
-                                          
+                                            
+                                    
                                         </tbody>
                                     </table>
                                     
@@ -126,13 +186,44 @@
                                 </div><!-- End activity item-->
                                 Nilai Performa Penjualan
                                 <div class="activity-item d-flex">
-                                    <div class="activite-label">{{ performa_penjualan.jual_brands|mul:2|add:performa_penjualan.jual_brands_lain }}</div>
+                                    <div class="activite-label">{{ penilaian.nilai_performa_penjualan|floatformat:"0" }}</div>
                                     <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
                                     <div class="activity-content">
-                                        Barang Brand Sendiri Yang Dijual: {{ performa_penjualan.jual_brands }}
+                                        Barang Brand Sendiri Yang Dijual: {{ performa_penjualan.jual_brands }} 
+                                        <br>
+                                        {% if performa_penjualan.jual_brands < 80%}
+                                            Nilai = 0
+                                        {% elif performa_penjualan.jual_brands >= 80 and performa_penjualan.jual_brands < 95 %}
+                                            Nilai = 1
+                                        {% elif performa_penjualan.jual_brands >= 95 and performa_penjualan.jual_brands < 100 %}
+                                            Nilai = 2
+                                        {% elif performa_penjualan.jual_brands >= 100 and performa_penjualan.jual_brands < 110 %}
+                                            Nilai = 3
+                                        {% elif performa_penjualan.jual_brands >= 110 and performa_penjualan.jual_brands < 120 %}
+                                            Nilai = 4
+                                        {% elif performa_penjualan.jual_brands >= 120 %}
+                                            Nilai = 5
+                                        {% endif %}
+                                        <hr>
                                         Barang Brand lain Yang Dijual: {{ performa_penjualan.jual_brands_lain }}
-                                        Nilai Performa Penjualan didapatkan dengan rumus (2x Barang Brand sendiri yang dijual)+(1x Total Barang Brand Lain yang
-                                        dijual)
+                                        {% if performa_penjualan.jual_brands_lain < 300 %}
+                                            Nilai = 0
+                                        {%elif performa_penjualan.jual_brands_lain >= 300 and performa_penjualan.jual_brands_lain < 350 %}
+                                            Nilai = 1
+                                        {% elif performa_penjualan.jual_brands_lain >= 300 and performa_penjualan.jual_brands_lain < 350 %}
+                                            Nilai = 2
+                                        {% elif performa_penjualan.jual_brands_lain >= 350 and performa_penjualan.jual_brands_lain < 400 %}
+                                            Nilai = 3
+                                        {% elif performa_penjualan.jual_brands_lain >= 400 and performa_penjualan.jual_brands_lain < 450 %}
+                                            Nilai = 4
+                                        {% elif performa_penjualan.jual_brands_lain >= 450 %}
+                                            Nilai = 5
+                                        {% endif %}
+                                        <hr>                                        
+                                        Nilai Performa Penjualan didapatkan dengan rumus (Nilai Jual Barang Brand + Nilai Jual Barang Brand Lain) / 2
+                                        dijual
+                                        <br>
+
                                     </div>
                                 </div><!-- End activity item-->
 

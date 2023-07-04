@@ -27,7 +27,9 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Nilai Karyawan <span>| Total Karyawan 18</span></h5>
                                     {% if nilai_ahp_ada == 'Yes' %}
-                                        <a type="button" id="myButton"class="btn btn-success btn-lg">Mulai Perhitungan</a>
+                                        <a type="button" id="myButton"class="btn btn-success btn-lg">Mulai Perhitungan Topsis</a>
+                                        <a type="button" id="wowButton" class="btn btn-success btn-lg">Mulai Perhitungan WP</a>
+                                        <a type="button" id="haButton" class="btn btn-success btn-lg">Mulai Perhitungan SAW</a>
                                     {% else %}
                                         <h4 style="color:red"> Belum dapat dilakukan Perhitungan karena Nama Kriteria dan/atau Nilai AHP belum ditentukan, Pergi ke Halaman AHP</h4>
                                     {% endif %}
@@ -38,11 +40,12 @@
                                                 <th scope="col">id</th>
                                                 <th scope="col">Nama Karyawan</th>
                                                 <th scope="col">Nilai performa Penjualan</th>
+                                                <th scope="col">Kategori Performa Penjualan</th>
                                                 <th scope="col">Nilai Pengetahuan Produk</th>
                                                 <th scope="col">Nilai Disiplin</th>
                                                 <th scope="col">Nilai Kehadiran</th>
                                                 <th scope="col">Nilai Masa Kerja</th>
-                                    
+                                                <th scope="col">Kategori Masa Kerja</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -50,12 +53,95 @@
                                             <tr>
                                                 <th scope="row">{{ penilaian.id }}</th>
                                                 <td>{{ penilaian.nama }}</td>
-                                                <td>{{ penilaian.nilai_performa_penjualan|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_pengetahuan_produk|floatformat:"2" }}</td>
+                                                <td>{{ penilaian.nilai_performa_penjualan|floatformat:"1" }}</td>
+                                                
+                                                {% if penilaian.nilai_performa_penjualan < 0 %}
+                                                <td>
+                                                    Nilai SALAH !!
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan == 0 and penilaian.nilai_performa_penjualan < 1 %} 
+                                                <td>
+                                                    Performa Buruk
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan >= 1 and penilaian.nilai_performa_penjualan < 2 %}
+                                                <td>
+                                                    Tidak Melebihi Target
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan >= 2 and penilaian.nilai_performa_penjualan < 3 %}
+                                                <td>
+                                                    Sesuai Target
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan >= 3 and penilaian.nilai_performa_penjualan < 4 %}
+                                                <td>
+                                                    Melebihi Target
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan >= 4 and penilaian.nilai_performa_penjualan < 5 %}
+                                                <td>
+                                                    Performa Baik
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan == 5 %}
+                                                <td>
+                                                    Performa sangat Baik
+                                                </td>
+                                                {% elif penilaian.nilai_performa_penjualan > 6 %}
+                                                <td>
+                                                    Nilai SALAH !!
+                                                </td>
+                                                {% endif %}
+                                                <td>{{ penilaian.nilai_pengetahuan_produk|floatformat:"1" }}</td>
                                                 <td>{{ penilaian.nilai_disiplin|floatformat:"0" }}</td>
                                                 <td>{{ penilaian.nilai_kehadiran|floatformat:"0" }}</td>
-                                                <td>{{ penilaian.nilai_masa_kerja|floatformat:"0" }} Bulan</td>
-                                    
+                                                <td>{{ penilaian.nilai_masa_kerja|floatformat:"0" }}</td>
+                                                {% if penilaian.nilai_masa_kerja == 0 %}
+                                                    <td>
+                                                        Kurang dari 1 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 1%}
+                                                    <td>
+                                                        Lebih dari 1 Tahun, di bawah 2 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 2 %}
+                                                    <td>
+                                                        Lebih dari 2 tahun, di bawah 5 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 3 %}
+                                                    <td>
+                                                        Lebih dari 5 tahun, di bawah 10 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 4 %}
+                                                    <td>
+                                                        Lebih dari 10 tahun, di bawah 15 Tahun
+                                                    </td>
+                                                    {% elif penilaian.nilai_masa_kerja == 5 %}
+                                                    <td>
+                                                        Lebih dari 15 Tahun
+                                                    </td>
+                                                {% endif %}
+                                                <!-- {% if penilaian.nilai_masa_kerja == 0 %}
+                                                <td>
+                                                    0 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>
+                                                {% elif penilaian.nilai_masa_kerja == 1%}
+                                                <td>
+                                                    1 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>
+                                                {% elif penilaian.nilai_masa_kerja == 2 %}
+                                                <td>
+                                                    2 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>                                             
+                                                {% elif penilaian.nilai_masa_kerja == 3 %}
+                                                <td>
+                                                    3 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>                                                
+                                                {% elif penilaian.nilai_masa_kerja == 4 %} 
+                                                <td>
+                                                    4 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>
+                                                {% elif penilaian.nilai_masa_kerja == 5 %}
+                                                <td>
+                                                    5 ({{ penilaian.years }} Tahun dan {{ penilaian.months|floatformat:"0" }} Bulan)
+                                                </td>
+                                                {% endif %} -->
                                             </tr>
                                             {% endfor %}
                                     
@@ -90,7 +176,43 @@
                 // The other page has finished loading
                 document.body.removeChild(loadingDiv);
                 window.location.href = "{% url 'perhitungan' %}";
-            }, 3000);
+            }, 500);
         });
+        document.getElementById("wowButton").addEventListener("click", function () {
+            // Disable the button so that it cannot be clicked again until the loading is complete
+            this.disabled = true;
+
+            // Create a blank div to cover the screen
+            var loadingDiv = document.createElement("div");
+            loadingDiv.style.width = "100vw";
+            loadingDiv.style.height = "100vh";
+            loadingDiv.style.backgroundColor = "white";
+            document.body.appendChild(loadingDiv);
+
+            // Start a timer that will load the other page after 3 seconds
+            var timer = setTimeout(function () {
+                // The other page has finished loading
+                document.body.removeChild(loadingDiv);
+                window.location.href = "{% url 'perhitungan_wp' %}";
+            }, 500);
+        });        
+            document.getElementById("haButton").addEventListener("click", function () {
+                // Disable the button so that it cannot be clicked again until the loading is complete
+                this.disabled = true;
+
+                // Create a blank div to cover the screen
+                var loadingDiv = document.createElement("div");
+                loadingDiv.style.width = "100vw";
+                loadingDiv.style.height = "100vh";
+                loadingDiv.style.backgroundColor = "white";
+                document.body.appendChild(loadingDiv);
+
+                // Start a timer that will load the other page after 3 seconds
+                var timer = setTimeout(function () {
+                    // The other page has finished loading
+                    document.body.removeChild(loadingDiv);
+                    window.location.href = "{% url 'perhitungan_saw' %}";
+                }, 500);
+            });          
     </script>
 {% endblock content %}
