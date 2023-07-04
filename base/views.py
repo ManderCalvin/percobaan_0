@@ -948,6 +948,30 @@ def tambahkaryawan(request):
             user.username = user.username
             user.save()
             
+            #Simpan ke Model Kehadiran
+            kehadiran = Kehadiran()
+            kehadiran.nama = user
+            kehadiran.hari_masuk = 25
+            kehadiran.bulan_kehadiran = "2023-05"
+            kehadiran.hari_libur = 4
+            kehadiran.hari_cuti = 1
+            kehadiran.save()
+            
+            # Simpan ke Model Displin
+            disiplin = Disiplin()
+            disiplin.nama = user
+            disiplin.kuota_disiplin = 5
+            disiplin.nilai_pelanggaran = 0
+            disiplin.bulan_disiplin = "2023-05"
+            disiplin.save()
+            
+            # Simpan ke Model Performa
+            performa_simpan = Performa_Penjualan()
+            performa_simpan.nama = user
+            performa_simpan.jual_brands = 0
+            performa_simpan.jual_brands_lain = 0
+            performa_simpan.bulan_performa_penjualan = "2023-05"
+            performa_simpan.save()
             
             # Simpan ke Model Penilaian
             penilaian = Penilaian()
