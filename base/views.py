@@ -14,6 +14,7 @@ from statistics import mean
 from django.db.models import Q
 from dateutil.relativedelta import relativedelta
 import mathfilters
+import numpy as np
 
 @login_required(login_url='login')
 def home(request):
@@ -93,12 +94,58 @@ def perhitungan_ahp(request):
                 data[score][score] = 1.0
 
             # Create a DataFrame from the nested dictionary
+            # Matriks Perbandingan
             df = pd.DataFrame(data)
             df1 = pd.DataFrame(data)
             df = df.reindex(df.columns, axis=0)
             df1 = df1.reindex(df.columns, axis=0)
             df = df.to_html(classes="table table-borderless datatable")
             
+            # Matriks Eigen Vektor
+            ev = df1.copy()
+            ev3 = np.dot(ev, ev)
+            ev2 = pd.DataFrame(ev3, columns=ev.columns.values)
+            ev3 = pd.DataFrame(ev3, columns=ev.columns.values)
+            ev3list = list()
+            ev3list1 = list()
+            for i in range(len(ev3)):
+                ev3list.append(sum(ev3.iloc[i]))
+            ev3listsum = sum(ev3list)
+            for j in range(len(ev3.columns.values)):
+                ev3list1.append(ev3list[j]/ev3listsum)
+        
+            ev3['total'] = ev3list
+            ev3['Eigen Vector'] = ev3list1
+            ev3listcek = list()
+            for k in range(len(ev3.columns.values)):
+                ev3listcek.append(sum(ev3[ev3.columns.values[k]]))
+            ev31 = pd.DataFrame([ev3listcek], columns=ev3.columns.values)
+            ev3 = ev3.append(ev31, ignore_index=True)
+            ev3 = ev3.to_html(classes="table table-borderless datatable")
+            
+            # Matriks Eigen Vektor 2
+            ev4 = ev2.copy()
+            ev5 = np.dot(ev4, ev4)
+            ev6 = pd.DataFrame(ev5, columns=ev.columns.values)
+            ev5 = pd.DataFrame(ev5, columns=ev.columns.values)
+            ev6list = list()
+            ev6list1 = list()
+            for i in range(len(ev6)):
+                ev6list.append(sum(ev6.iloc[i]))
+            ev6listsum = sum(ev6list)
+            for j in range(len(ev6.columns.values)):
+                ev6list1.append(ev6list[j]/ev6listsum)
+            
+            ev6['total'] = ev6list
+            ev6['Eigen Vector'] = ev6list1       
+            ev6listcek = list()
+            for k in range(len(ev6.columns.values)):
+                ev6listcek.append(sum(ev6[ev6.columns.values[k]]))
+            ev61 = pd.DataFrame([ev6listcek], columns=ev6.columns.values)
+            ev6 = ev6.append(ev61, ignore_index=True)
+            ev6 = ev6.to_html(classes="table table-borderless datatable")
+            
+                        
             # Sum Column
             ef1_square = list()
             for i in range(len(df1.columns.values)):
@@ -209,6 +256,8 @@ def perhitungan_ahp(request):
         gf = 'gf',
         hf = 'hf',
         jf = 'jf',
+        ev3 = 'ev3',
+        ev6 = 'ev6'        
 
 
     context = {
@@ -221,6 +270,8 @@ def perhitungan_ahp(request):
         'gf': gf,
         'hf': hf,
         'jf': jf,
+        'ev3': ev3,
+        'ev6': ev6
 
     }
     return render(request, 'base/perhitungan_ahp.html', context)
